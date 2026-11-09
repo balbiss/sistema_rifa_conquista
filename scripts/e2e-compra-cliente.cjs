@@ -1,0 +1,27 @@
+// Compra como cliente comum (sem login) no celular, com o PIX em modo simulado.
+const { chromium } = require(process.env.PLAYWRIGHT_CORE || 'playwright-core')
+const path = require('path')
+const out = process.argv[2] || 'e2e-out'
+const base = process.env.BASE || 'http://localhost:5199'
+;(async () => {
+  require('fs').mkdirSync(out, { recursive: true })
+  const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' })
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } })
+  const p = await ctx.newPage()
+  await p.goto(base + '/')
+  await p.getByRole('button', { name: /EU QUERO/ }).waitFor({ timeout: 15000 })
+  await p.mouse.wheel(0, 900); await p.waitForTimeout(800)
+  await p.screenshot({ path: path.join(out, 'c1-barra.png') })
+  await p.locator('.pbuybar button').click()
+  await p.getByPlaceholder('Seu nome e sobrenome').fill('Fernanda Cliente Teste')
+  await p.getByPlaceholder('000.000.000-00').fill('11144477735')
+  await p.getByPlaceholder('(91) 98888-7777').fill('91981112233')
+  await p.getByRole('button', { name: /Gerar PIX/ }).click()
+  await p.getByRole('button', { name: /Copiar código PIX/ }).waitFor({ timeout: 15000 })
+  await p.screenshot({ path: path.join(out, 'c2-pix.png') })
+  await p.getByRole('button', { name: /Simular pagamento/ }).click()
+  await p.getByText('Pagamento confirmado!').waitFor({ timeout: 20000 })
+  await p.screenshot({ path: path.join(out, 'c3-pago.png') })
+  await browser.close()
+  console.log('OK: compra do cliente sem login funcionou (barra fixa → PIX → pago → números)')
+})().catch(e => { console.error('FALHOU:', e.message.split('\n')[0]); process.exit(1) })

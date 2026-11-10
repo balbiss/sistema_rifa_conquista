@@ -7,6 +7,7 @@ import { useReveal } from '../../components/PublicLayout'
 import { IcApuracao, IcConclusao, IcDocumento, IcEscudo, IcParticipacao, IcRegularizacao } from '../../components/StepIcons'
 import { F, Modal, inputStyle, showError, toast } from '../../components/ui'
 import { Checkout } from './Checkout'
+import { PasswordInput } from '../../components/PasswordInput'
 
 export function getRef() {
   try {
@@ -234,7 +235,7 @@ function InterestModal({ slug, campaignName, onClose }: { slug: string; campaign
             <F label="E-mail"><input type="email" value={f.email} onChange={e => setF({ ...f, email: e.target.value })} style={inputStyle} autoComplete="email" /></F>
           </div>
           <F label="Criar senha (opcional)" hint="Com senha você acompanha seu cadastro na área do participante. Mínimo 8 caracteres, com letras e números.">
-            <input type="password" value={f.password} onChange={e => setF({ ...f, password: e.target.value })} style={inputStyle} autoComplete="new-password" />
+            <PasswordInput value={f.password} onChange={v => setF({ ...f, password: v })} style={inputStyle} autoComplete="new-password" />
           </F>
           {ref && <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 10px' }}>Indicação registrada: <b>{ref}</b></p>}
           <label style={{ display: 'flex', gap: 8, fontSize: 13.5, lineHeight: 1.5, marginBottom: 14 }}>

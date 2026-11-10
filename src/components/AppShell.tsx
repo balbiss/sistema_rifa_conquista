@@ -60,7 +60,8 @@ export function AppShell({ area }: { area: 'admin' | 'afiliado' }) {
     setUserMenu(false)
     const r = await Swal.fire({
       title: 'Trocar senha', confirmButtonText: 'Salvar', showCancelButton: true, cancelButtonText: 'Cancelar', confirmButtonColor: '#1458D4',
-      html: '<input id="sw-cur" type="password" class="swal2-input" placeholder="Senha atual" autocomplete="current-password"><input id="sw-new" type="password" class="swal2-input" placeholder="Nova senha (8+, letras e números)" autocomplete="new-password">',
+      html: '<input id="sw-cur" type="password" class="swal2-input" placeholder="Senha atual" autocomplete="current-password"><input id="sw-new" type="password" class="swal2-input" placeholder="Nova senha (8+, letras e números)" autocomplete="new-password"><label style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px;font-size:14px;cursor:pointer"><input type="checkbox" id="sw-show"> Mostrar senhas</label>',
+      didOpen: () => { const c = document.getElementById('sw-show') as HTMLInputElement; c.onchange = () => ['sw-cur', 'sw-new'].forEach(i => { (document.getElementById(i) as HTMLInputElement).type = c.checked ? 'text' : 'password' }) },
       preConfirm: () => ({ current: (document.getElementById('sw-cur') as HTMLInputElement).value, password: (document.getElementById('sw-new') as HTMLInputElement).value }),
     })
     if (!r.isConfirmed) return

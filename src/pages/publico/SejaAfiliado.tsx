@@ -4,6 +4,7 @@ import { BadgeDollarSign, CheckCircle2, Link2, Loader2, Lock, Wallet } from 'luc
 import { api, useApi } from '../../lib/api'
 import { PublicLayout } from '../../components/PublicLayout'
 import { SectionTitle } from './CampaignLanding'
+import { PasswordInput } from '../../components/PasswordInput'
 
 // Cadastro do afiliado pelo link. A chave PIX informada aqui é a que recebe as comissões
 // (o afiliado não troca depois — só o organizador).
@@ -71,7 +72,7 @@ export default function SejaAfiliado() {
                 </div>
                 <div className="grid2" style={{ gap: 12 }}>
                   <label style={{ display: 'block', marginBottom: 12 }}><span style={lbl}>E-mail (login)</span><input type="email" value={f.email} onChange={e => set('email', e.target.value)} autoComplete="email" style={{ ...inp, ...bad('E-mail') }} /></label>
-                  <label style={{ display: 'block', marginBottom: 12 }}><span style={lbl}>Senha</span><input type="password" value={f.password} onChange={e => set('password', e.target.value)} autoComplete="new-password" style={{ ...inp, ...bad('Senha') }} placeholder="8+ letras e números" /></label>
+                  <label style={{ display: 'block', marginBottom: 12 }}><span style={lbl}>Senha</span><PasswordInput value={f.password} onChange={v => set('password', v)} autoComplete="new-password" style={{ ...inp, ...bad('Senha') }} placeholder="8+ letras e números" ariaLabel="Senha" /></label>
                 </div>
                 <div style={{ padding: 14, borderRadius: 12, background: '#F5F7FB', border: '1px solid #e3e8f2', marginBottom: 12 }}>
                   <span style={lbl}>Chave PIX para receber as comissões</span>

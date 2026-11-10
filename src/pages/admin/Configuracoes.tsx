@@ -5,6 +5,7 @@ import { api, useApi } from '../../lib/api'
 import { dateTime } from '../../lib/fmt'
 import { ActionButton, Badge, Card, DataTable, F, IconBtn, Loading, LockNotice, Modal, PageHead, Switch, Tabs, btn, inputStyle, showError, toast } from '../../components/ui'
 import { ImageList } from '../../components/Upload'
+import { PasswordInput } from '../../components/PasswordInput'
 
 type Tab = 'platform' | 'organizer' | 'legal' | 'regularizacao' | 'pagamentos' | 'saques' | 'commissions' | 'notifications' | 'security' | 'usuarios'
 const PERM_LABEL: Record<string, string> = { '*': 'Acesso total', campanhas: 'Campanhas', identificadores: 'Identificadores', participantes: 'Participantes', afiliados: 'Afiliados', comissoes: 'Comissões', financeiro: 'Financeiro', apuracao: 'Apuração', premios: 'Prêmios', relatorios: 'Relatórios', configuracoes: 'Configurações', usuarios: 'Usuários', auditoria: 'Auditoria' }
@@ -108,7 +109,7 @@ function Usuarios() {
           footer={<><button style={btn('ghost')} onClick={() => setEdit(null)}>Cancelar</button><ActionButton variant="vinho" onClick={async () => { if (edit.id) await api(`/admin/users/${edit.id}`, { method: 'PUT', body: edit }); else await api('/admin/users', { body: edit }); toast('success', 'Usuário salvo'); setEdit(null); force(x => x + 1); location.reload() }}>Salvar</ActionButton></>}>
           <F label="Nome"><input value={edit.name} onChange={e => setEdit({ ...edit, name: e.target.value })} style={inputStyle} /></F>
           {!edit.id && <F label="E-mail"><input value={edit.email} onChange={e => setEdit({ ...edit, email: e.target.value })} style={inputStyle} /></F>}
-          <F label={edit.id ? 'Nova senha (opcional)' : 'Senha'} hint="Mínimo 8 caracteres, com letras e números."><input type="password" value={edit.password} onChange={e => setEdit({ ...edit, password: e.target.value })} style={inputStyle} autoComplete="new-password" /></F>
+          <F label={edit.id ? 'Nova senha (opcional)' : 'Senha'} hint="Mínimo 8 caracteres, com letras e números."><PasswordInput value={edit.password} onChange={v => setEdit({ ...edit, password: v })} style={inputStyle} autoComplete="new-password" /></F>
           <F label="Permissões">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 6 }}>
               {['*', ...(data?.permissions || [])].map((p: string) => (
@@ -142,9 +143,9 @@ function PagamentosCfg({ data, reload }: { data: any; reload: () => void }) {
       <F label="Modo"><select value={f.mode} onChange={e => set('mode', e.target.value)} style={inputStyle}><option value="simulado">Simulado (teste, sem cobrança)</option><option value="real">Real — SyncPay</option></select></F>
       <div className="grid2">
         <F label="Client ID (SyncPay › Developer › API)"><input value={f.client_id} onChange={e => set('client_id', e.target.value)} style={inputStyle} autoComplete="off" /></F>
-        <F label="Client secret" hint={data.has_secret ? `Salvo (${data.client_secret}). Deixe em branco para manter.` : 'Ainda não informado.'}><input type="password" value={f.client_secret} onChange={e => set('client_secret', e.target.value)} style={inputStyle} autoComplete="new-password" /></F>
+        <F label="Client secret" hint={data.has_secret ? `Salvo (${data.client_secret}). Deixe em branco para manter.` : 'Ainda não informado.'}><PasswordInput value={f.client_secret} onChange={v => set('client_secret', v)} style={inputStyle} autoComplete="new-password" /></F>
       </div>
-      <F label="Token do webhook (opcional)" hint={data.has_webhook_token ? `Salvo (${data.webhook_token}). Deixe em branco para manter.` : 'Se configurar um token no webhook da SyncPay, informe o mesmo aqui.'}><input type="password" value={f.webhook_token} onChange={e => set('webhook_token', e.target.value)} style={inputStyle} autoComplete="new-password" /></F>
+      <F label="Token do webhook (opcional)" hint={data.has_webhook_token ? `Salvo (${data.webhook_token}). Deixe em branco para manter.` : 'Se configurar um token no webhook da SyncPay, informe o mesmo aqui.'}><PasswordInput value={f.webhook_token} onChange={v => set('webhook_token', v)} style={inputStyle} autoComplete="new-password" /></F>
       <F label="URL do webhook para cadastrar na SyncPay" hint="Precisa ser o endereço público do site (https). Em teste local a confirmação acontece consultando a SyncPay a cada poucos segundos."><input readOnly value={hook} onFocus={e => e.target.select()} style={inputStyle} /></F>
       <div className="grid2">
         <F label="Minutos para pagar (reserva dos números)"><input type="number" min={5} max={120} value={f.reservation_minutes} onChange={e => set('reservation_minutes', Number(e.target.value))} style={inputStyle} /></F>

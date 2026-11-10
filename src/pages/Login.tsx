@@ -2,6 +2,7 @@ import { useState, type CSSProperties, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api, session } from '../lib/api'
 import { BrandMark, useBrand } from '../components/Brand'
+import { EyeButton } from '../components/PasswordInput'
 
 // Login no mesmo layout do CRM Clara V2 (painel rosa à direita, campos com ícone, botão vinho).
 const PANEL = '#0B1730', VINHO = '#0B1730', VINHO_BTN = '#FF8A24', VINHO_MUTED = '#9fb0cf'
@@ -15,6 +16,7 @@ export default function Login() {
   const [params] = useSearchParams()
   const [email, setEmail] = useState(() => { try { return localStorage.getItem('cp_email') || '' } catch { return '' } })
   const [senha, setSenha] = useState('')
+  const [verSenha, setVerSenha] = useState(false)
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState(params.get('expirou') ? 'Sua sessão expirou. Entre de novo.' : '')
 
@@ -39,7 +41,7 @@ export default function Login() {
         </div>
         <form onSubmit={submit} style={{ width: '100%' }}>
           <label style={field}><UserIcon /><input value={email} onChange={e => setEmail(e.target.value)} type="email" required placeholder="E-mail" autoComplete="username" style={inputCss} /></label>
-          <label style={field}><LockIcon /><input value={senha} onChange={e => setSenha(e.target.value)} type="password" required placeholder="Senha" autoComplete="current-password" style={inputCss} /></label>
+          <label style={field}><LockIcon /><input value={senha} onChange={e => setSenha(e.target.value)} type={verSenha ? 'text' : 'password'} required placeholder="Senha" autoComplete="current-password" autoCapitalize="none" style={inputCss} /><EyeButton show={verSenha} onToggle={() => setVerSenha(v => !v)} color="#6b7884" style={{ position: 'static', transform: 'none', width: 30, height: 30 }} /></label>
           {erro && <p role="alert" style={{ color: '#b3261e', fontWeight: 700, fontSize: 14, margin: '-4px 0 12px' }}>{erro}</p>}
           <button type="submit" disabled={loading} style={{ width: '100%', height: 38, background: VINHO_BTN, color: '#fff', border: 'none', borderRadius: 3, fontSize: 15.5 }}>{loading ? 'Entrando…' : 'Login'}</button>
         </form>

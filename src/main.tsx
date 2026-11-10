@@ -9,6 +9,21 @@ import { Loading } from './components/ui'
 import Login from './pages/Login'
 import Home from './pages/publico/Home'
 
+// Saiu versão nova do sistema enquanto a página estava aberta: os arquivos antigos não existem mais.
+// Em vez de tela branca, recarrega uma vez para pegar a versão nova.
+const reloadOnce = () => {
+  try {
+    const last = Number(sessionStorage.getItem('cp_reload_at') || 0)
+    if (Date.now() - last < 30_000) return // evita ficar recarregando em loop
+    sessionStorage.setItem('cp_reload_at', String(Date.now()))
+  } catch { /* sem storage */ }
+  location.reload()
+}
+window.addEventListener('vite:preloadError', e => { e.preventDefault(); reloadOnce() })
+window.addEventListener('unhandledrejection', e => {
+  if (/dynamically imported module|Importing a module script failed|error loading dynamically imported/i.test(String(e.reason?.message || e.reason))) reloadOnce()
+})
+
 const CampanhaPublica = lazy(() => import('./pages/publico/Campanha'))
 const Regulamento = lazy(() => import('./pages/publico/Regulamento'))
 const Transparencia = lazy(() => import('./pages/publico/Transparencia'))

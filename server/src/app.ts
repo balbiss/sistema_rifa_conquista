@@ -64,6 +64,11 @@ export function buildApp() {
           const cache = url.pathname.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'public, max-age=3600'
           return finish(new Response(Bun.file(p), { headers: { 'Cache-Control': cache } }))
         }
+        // arquivo de versão antiga (ou inexistente) em /assets: 404 de verdade — devolver a página aqui
+        // faz o navegador tentar rodar HTML como JavaScript e a tela fica branca
+        if (url.pathname.startsWith('/assets/') || /\.(js|css|map|png|jpe?g|webp|svg|ico|woff2?)$/i.test(url.pathname)) {
+          return finish(new Response('Não encontrado', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } }))
+        }
         return finish(new Response(Bun.file(join(DIST, 'index.html')), { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' } }))
       }
       return finish(new Response('Não encontrado', { status: 404 }))

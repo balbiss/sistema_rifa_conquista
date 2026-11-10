@@ -17,7 +17,7 @@ export function subscribe(scope: Client['scope'], info: { userId?: number; affil
   })
   const ping = setInterval(() => { const cl = clients.get(id); if (!cl) return clearInterval(ping); cl.send(`: ping\n\n`) }, 25_000)
   void ctrl
-  return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache, no-transform', Connection: 'keep-alive', 'X-Accel-Buffering': 'no' } })
+  return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache, no-transform', 'X-Accel-Buffering': 'no' } })
 }
 
 /**

@@ -704,7 +704,7 @@ export function adminRoutes(r: Router) {
     } else if (kind === 'campanhas') {
       rows = all<any>(`SELECT * FROM campaigns ${cid ? 'WHERE id = ' + cid : ''} ORDER BY id DESC`).map(c => {
         const p = progress(c.id)!
-        return { campanha: c.name, status: CAMPAIGN_STATUS_LABEL[c.status], identificadores: c.total_numbers, atribuidos_reais: p.real_assigned, atribuidos_simulados: p.simulated_assigned, progresso_real: p.percent + '%', progresso_com_simulacao: p.percent_simulated + '%', bloqueados: p.counts.bloqueado, cancelados: p.counts.cancelado }
+        return { campanha: c.name, status: CAMPAIGN_STATUS_LABEL[c.status], identificadores: c.total_numbers, atribuidos_reais: p.real_assigned, atribuidos_simulados: p.simulated_assigned, progresso_real: String(p.percent).replace('.', ',') + '%', progresso_com_simulacao: String(p.percent_simulated).replace('.', ',') + '%', bloqueados: p.counts.bloqueado, cancelados: p.counts.cancelado }
       })
       columns = [{ key: 'campanha', label: 'Campanha' }, { key: 'status', label: 'Status' }, { key: 'identificadores', label: 'Identificadores' }, { key: 'atribuidos_reais', label: 'Atribuídos (reais)' }, { key: 'atribuidos_simulados', label: 'Atribuídos (simulação)' }, { key: 'progresso_real', label: 'Progresso real' }, { key: 'progresso_com_simulacao', label: 'Com simulação' }, { key: 'bloqueados', label: 'Bloqueados' }, { key: 'cancelados', label: 'Cancelados' }]
     } else if (kind === 'afiliados') {

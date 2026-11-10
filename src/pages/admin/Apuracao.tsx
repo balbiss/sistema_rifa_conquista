@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CloudDownload, FileText, Printer, ShieldAlert, ShieldCheck } from 'lucide-react'
 import { api, useApi } from '../../lib/api'
 import { useCampaignPicker } from '../../lib/hooks'
-import { date, dateTime } from '../../lib/fmt'
+import { date, dateTime, pct } from '../../lib/fmt'
 import { ActionButton, Badge, Card, DataTable, F, IconBtn, LockNotice, Modal, PageHead, btn, confirmBox, inputStyle, showError, toast } from '../../components/ui'
 
 const SIT: Record<string, [string, 'green' | 'amber' | 'muted']> = { contemplado: ['Contemplado', 'green'], numero_sem_participante: ['Sem participação', 'amber'], fora_do_intervalo: ['Fora da faixa', 'muted'] }
@@ -99,6 +99,6 @@ function ReportModal({ d, onClose }: { d: any; onClose: () => void }) {
 const rows = (r: any, d: any): [string, any][] => [
   ['Campanha', r.campanha.nome], ['Identificadores', `${r.campanha.identificadores} (${r.campanha.faixa})`], ['Regra', r.regra],
   ['Extração', `${r.extracao.numero} — ${date(r.extracao.data)}`], ['1º prêmio', r.extracao.primeiro_premio], ['Identificador apurado', r.identificador_apurado],
-  ['Resultado', r.resultado], ['Fonte', r.fonte], ['Progresso no momento', `${r.progresso_no_momento.percentual}% real · ${r.progresso_no_momento.atribuidos_simulados} simulados`],
+  ['Resultado', r.resultado], ['Fonte', r.fonte], ['Progresso no momento', `${pct(r.progresso_no_momento.percentual)} real · ${r.progresso_no_momento.atribuidos_simulados} simulados`],
   ['Registrado em', dateTime(r.gerado_em)], ['Responsável', r.responsavel], ['Código de verificação', d.hash], ['Código anterior', d.prev_hash],
 ]

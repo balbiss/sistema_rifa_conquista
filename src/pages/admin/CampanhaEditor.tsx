@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Eye, FilePlus2, Save, Trash2, CheckCircle2, XCircle, Upload as UploadIcon } from 'lucide-react'
 import { api, useApi } from '../../lib/api'
-import { CAMPAIGN_STATUS, LEGAL_STATUS, brl, date, dateTime, toInputDate } from '../../lib/fmt'
+import { CAMPAIGN_STATUS, LEGAL_STATUS, brl, date, dateTime, toInputDate, pct } from '../../lib/fmt'
 import { ActionButton, Badge, Card, DataTable, ErrorBox, F, IconBtn, Kpi, Loading, LockNotice, Modal, PageHead, Switch, Tabs, btn, confirmBox, inputStyle, promptBox, showError, toast } from '../../components/ui'
 import { ImageList, useUpload } from '../../components/Upload'
 
@@ -46,8 +46,8 @@ export default function CampanhaEditor() {
         <a href={`/c/${c.slug}?checkout=teste`} target="_blank" style={btn('vinho')} title="Abre a compra por PIX em modo de teste (exige PIX em modo simulado)">Testar compra PIX</a>
       </PageHead>
       <div className="kpi-grid" style={{ marginBottom: 14 }}>
-        <Kpi label="Progresso real" value={`${c.progress.percent}%`} hint={`${c.progress.real_assigned} de ${c.total_numbers}`} />
-        <Kpi label="Com simulação" value={`${c.progress.percent_simulated}%`} hint={`${c.progress.simulated_assigned} simulados`} tone="#9A5B00" />
+        <Kpi label="Progresso real" value={pct(c.progress.percent)} hint={`${c.progress.real_assigned} de ${c.total_numbers}`} />
+        <Kpi label="Com simulação" value={pct(c.progress.percent_simulated)} hint={`${c.progress.simulated_assigned} simulados`} tone="#9A5B00" />
         <Kpi label="Reservados" value={c.progress.counts.reservado} />
         <Kpi label="Bloqueados / cancelados" value={`${c.progress.counts.bloqueado} / ${c.progress.counts.cancelado}`} />
       </div>

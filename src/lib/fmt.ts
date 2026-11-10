@@ -58,3 +58,5 @@ export const ACTION_LABEL: Record<string, string> = {
   'despesa.criar': 'lançou despesa', 'premio.criar': 'cadastrou prêmio', 'premio.editar': 'editou prêmio', 'sistema.seed': 'criou dados iniciais', 'simulacao.limpar': 'limpou dados de simulação',
 }
 export const actionLabel = (a: string) => ACTION_LABEL[a] || a.replace(/[._]/g, ' ')
+/** Percentual em pt-BR com até 1 casa decimal: 0,1% · 12,5% · 100%. */
+export const pct = (v: any) => (Number(v) || 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%'

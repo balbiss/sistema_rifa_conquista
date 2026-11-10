@@ -97,14 +97,15 @@ export function progress(campaignId: number) {
   const counts = Object.fromEntries(all<any>('SELECT status, COUNT(*) AS n FROM numbers WHERE campaign_id = ? GROUP BY status', campaignId).map(r => [r.status, r.n]))
   const total = c.total_numbers
   // usável = total menos os que ficaram fora de jogo (bloqueados/cancelados não contam pra conclusão)
-  const pct = (n: number) => Math.min(100, Math.floor((n * 100) / Math.max(1, total)))
+  // uma casa decimal, sempre arredondando PARA BAIXO (nunca mostra mais do que foi vendido): 1 de 1000 = 0,1%
+  const pct = (n: number) => Math.min(100, Math.floor((n * 1000) / Math.max(1, total)) / 10)
   return {
     total,
     real_assigned: real,
     simulated_assigned: simulated,
     percent: pct(real), // o único número que o site público vê
     percent_simulated: pct(real + simulated),
-    remaining_percent: 100 - pct(real),
+    remaining_percent: Math.round((100 - pct(real)) * 10) / 10,
     counts: { disponivel: 0, reservado: 0, atribuido: 0, cancelado: 0, bloqueado: 0, ...counts },
   }
 }

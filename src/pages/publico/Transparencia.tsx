@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, BookOpen, Lock, ShieldCheck } from 'lucide-react'
 import { useApi } from '../../lib/api'
-import { CAMPAIGN_STATUS, date, LEGAL_STATUS } from '../../lib/fmt'
+import { CAMPAIGN_STATUS, date, LEGAL_STATUS, pct } from '../../lib/fmt'
 import { PublicLayout } from '../../components/PublicLayout'
 
 export default function Transparencia() {
@@ -15,7 +15,7 @@ export default function Transparencia() {
     ['Chance por identificador', t.chance_per_number],
     ['Identificadores com participação válida', t.assigned_valid.toLocaleString('pt-BR')],
     ['Identificadores disponíveis', t.available.toLocaleString('pt-BR')],
-    ['Progresso', `${c.progress.percent}%`],
+    ['Progresso', pct(c.progress.percent)],
     ['Método de apuração', `${t.draw_method} — ${t.draw_rule}`],
     ['Extração de referência', t.draw_extraction],
     ['Valor de referência por participação', t.ref_price != null ? t.ref_price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'A definir'],

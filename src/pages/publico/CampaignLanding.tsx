@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, BarChart3, BellRing, Bike, BookOpen, Building2, Car, GraduationCap, ShieldCheck, ClipboardCheck, FileSearch, FileText, Landmark, ScrollText, Target, Ticket, Trophy } from 'lucide-react'
 import { api, session, useApi } from '../../lib/api'
+import { pct } from '../../lib/fmt'
 import { useReveal } from '../../components/PublicLayout'
 import { IcApuracao, IcConclusao, IcDocumento, IcEscudo, IcParticipacao, IcRegularizacao } from '../../components/StepIcons'
 import { F, Modal, inputStyle, showError, toast } from '../../components/ui'
@@ -21,11 +22,11 @@ function ProgressCard({ percent, simulated, slug, onAvisar, open }: { percent: n
   return (
     <aside className="pcard-prog fade-up" style={{ animationDelay: '.15s' }} aria-label="Progresso da campanha">
       <h3><Target size={26} color="#FF8A24" /> Progresso da Campanha</h3>
-      <div className="pprog-pct">{percent}%</div>
+      <div className="pprog-pct">{pct(percent)}</div>
       <div className="pprog-track" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso da campanha">
         <div className="pprog-fill" style={{ width: `${w}%`, ...(simulated ? { background: 'repeating-linear-gradient(45deg,#f2b35f,#f2b35f 10px,#f7cd8f 10px,#f7cd8f 20px)' } : {}) }} />
       </div>
-      <div className="pprog-rest">{percent >= 100 ? <b>Campanha concluída!</b> : <>Faltam <b>{100 - percent}%</b> para a conclusão.</>}</div>
+      <div className="pprog-rest">{percent >= 100 ? <b>Campanha concluída!</b> : <>Faltam <b>{pct(Math.round((100 - percent) * 10) / 10)}</b> para a conclusão.</>}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <button className="pbtn pbtn-orange" onClick={onAvisar}>{open ? <><Ticket size={19} /> EU QUERO! Comprar números</> : <><BellRing size={18} /> Quero ser avisado</>}</button>
         <Link to={`/c/${slug}/regulamento`} className="pbtn pbtn-outline"><FileText size={18} /> Ler o regulamento</Link>
@@ -77,7 +78,7 @@ export function CampaignLanding({ slug }: { slug: string }) {
     <>
       {preview && (
         <div style={{ background: 'repeating-linear-gradient(45deg,#fff1d6,#fff1d6 14px,#ffe6b3 14px,#ffe6b3 28px)', color: '#6b4100', textAlign: 'center', padding: '10px 16px', fontWeight: 700, fontSize: 14 }}>
-          PRÉ-VISUALIZAÇÃO DO ADMINISTRADOR COM DADOS SIMULADOS — o público vê {c.progress.percent}% (somente participações reais).
+          PRÉ-VISUALIZAÇÃO DO ADMINISTRADOR COM DADOS SIMULADOS — o público vê {pct(c.progress.percent)} (somente participações reais).
         </div>
       )}
 
@@ -193,7 +194,7 @@ export function CampaignLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {c.open_for_participation && !checkout && <div className="pbuybar"><div><small>{c.progress.percent}% vendido</small><b>R$ {Number(c.transparency.ref_price || 0).toFixed(2).replace('.', ',')} por número</b></div><button className="pbtn pbtn-orange" onClick={() => setCheckout('real')}><Ticket size={18} /> Comprar números</button></div>}
+      {c.open_for_participation && !checkout && <div className="pbuybar"><div><small>{pct(c.progress.percent)} vendido</small><b>R$ {Number(c.transparency.ref_price || 0).toFixed(2).replace('.', ',')} por número</b></div><button className="pbtn pbtn-orange" onClick={() => setCheckout('real')}><Ticket size={18} /> Comprar números</button></div>}
       {checkout && <Checkout slug={c.slug} campaignName={c.name} sandbox={c.payment_test_mode} test={checkout === 'teste'} price={checkout === 'teste' ? adminC?.ref_price ?? 0 : c.transparency.ref_price ?? 0} maxPerOrder={c.max_per_order || 100} onClose={() => { setCheckout(null); if (location.search.includes('checkout')) history.replaceState(null, '', location.pathname) }} />}
       {interest && <InterestModal slug={c.slug} campaignName={c.name} onClose={() => { setInterest(false); if (location.search.includes('avisar')) history.replaceState(null, '', location.pathname) }} />}
     </>

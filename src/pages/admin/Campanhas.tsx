@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Archive, ArchiveRestore, Copy, ExternalLink, Pencil, Plus } from 'lucide-react'
 import { api, useApi } from '../../lib/api'
-import { CAMPAIGN_STATUS, brl, date, int } from '../../lib/fmt'
+import { CAMPAIGN_STATUS, brl, date, int, pct } from '../../lib/fmt'
 import { ActionButton, Badge, DataTable, F, IconBtn, Modal, PageHead, Tabs, btn, confirmBox, inputStyle, showError, toast } from '../../components/ui'
 
 export default function Campanhas() {
@@ -24,7 +24,7 @@ export default function Campanhas() {
           <div><b>{c.name}</b><div style={{ fontSize: 12.5, color: 'var(--muted)' }}>{c.subtitle || '/' + c.slug}</div></div>,
           <Badge tone={CAMPAIGN_STATUS[c.status]?.tone}>{CAMPAIGN_STATUS[c.status]?.label}</Badge>,
           int(c.total_numbers),
-          <div style={{ minWidth: 120 }}><div style={{ height: 6, background: '#e6ecf6', borderRadius: 3, overflow: 'hidden' }}><div style={{ width: `${c.progress.percent_simulated}%`, height: '100%', background: c.progress.percent ? '#1458D4' : '#e7bd66' }} /></div><span style={{ fontSize: 12.5, color: 'var(--muted)' }}>real {c.progress.percent}% · sim. {c.progress.percent_simulated}%</span></div>,
+          <div style={{ minWidth: 120 }}><div style={{ height: 6, background: '#e6ecf6', borderRadius: 3, overflow: 'hidden' }}><div style={{ width: `${c.progress.percent_simulated}%`, height: '100%', background: c.progress.percent ? '#1458D4' : '#e7bd66' }} /></div><span style={{ fontSize: 12.5, color: 'var(--muted)' }}>real {pct(c.progress.percent)} · sim. {pct(c.progress.percent_simulated)}</span></div>,
           <span style={{ fontSize: 13 }}>{brl(c.ref_price)} / {brl(c.commission_value)}</span>,
           c.gate.allowed ? <Badge tone="green">Regularizada</Badge> : <Badge tone="amber" title={c.gate.reasons.join('\n')}>Pendente ({c.gate.reasons.length})</Badge>,
           <span style={{ display: 'inline-flex', gap: 6 }}>

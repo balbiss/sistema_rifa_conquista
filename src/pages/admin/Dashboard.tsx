@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Activity, Coins, Megaphone, Percent, Receipt, Ticket, TrendingUp, UserCheck, Users, Wallet, Link2, CircleDollarSign } from 'lucide-react'
 import { useApi } from '../../lib/api'
-import { CAMPAIGN_STATUS, actionLabel, brl, dateTime, int } from '../../lib/fmt'
+import { CAMPAIGN_STATUS, actionLabel, brl, dateTime, int, pct } from '../../lib/fmt'
 import { Badge, Card, ErrorBox, Kpi, LockNotice, PageHead, btn, inputStyle } from '../../components/ui'
 import { DailyBars, Donut } from '../../components/Charts'
 
@@ -28,7 +28,7 @@ export default function Dashboard() {
         <Kpi label="Campanhas" value={sk(int(t?.campaigns))} hint={t && `${t.campaigns_active} ativa(s)`} icon={<Megaphone size={17} />} />
         <Kpi label="Participantes" value={sk(int(t?.participants))} hint="cadastros" icon={<Users size={17} />} />
         <Kpi label="Participações confirmadas" value={sk(int(t?.participations_confirmed))} hint={t && `${int(t.numbers_confirmed)} identificadores · ${int(t.numbers_confirmed_sim)} simulados`} icon={<Ticket size={17} />} />
-        <Kpi label="Conclusão (real)" value={sk(`${f?.progress?.percent ?? 0}%`)} hint={f && `com simulação: ${f.progress.percent_simulated}%`} icon={<Percent size={17} />} />
+        <Kpi label="Conclusão (real)" value={sk(pct(f?.progress?.percent ?? 0))} hint={f && `com simulação: ${pct(f.progress.percent_simulated)}`} icon={<Percent size={17} />} />
         <Kpi label="Afiliados ativos" value={sk(int(t?.affiliates))} icon={<Link2 size={17} />} />
         <Kpi label="Indicações" value={sk(int(t?.referrals))} icon={<UserCheck size={17} />} />
         <Kpi label="Comissões pendentes" value={sk(brl(t?.commissions_pending))} hint="pendentes + aprovadas" tone="#9A5B00" icon={<Coins size={17} />} />
@@ -56,7 +56,7 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', inset: 0, width: `${c.progress.percent_simulated}%`, background: 'repeating-linear-gradient(45deg,#e7bd66,#e7bd66 5px,#f2d79d 5px,#f2d79d 10px)' }} />
                 <div style={{ position: 'absolute', inset: 0, width: `${c.progress.percent}%`, background: '#1458D4' }} />
               </div>
-              <div style={{ fontSize: 12.5, color: 'var(--muted)', marginTop: 4 }}>Real {c.progress.percent}% · com simulação {c.progress.percent_simulated}%</div>
+              <div style={{ fontSize: 12.5, color: 'var(--muted)', marginTop: 4 }}>Real {pct(c.progress.percent)} · com simulação {pct(c.progress.percent_simulated)}</div>
             </Link>
           ))}
         </Card>

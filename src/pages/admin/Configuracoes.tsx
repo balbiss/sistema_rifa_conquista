@@ -150,7 +150,13 @@ function PagamentosCfg({ data, reload }: { data: any; reload: () => void }) {
         <F label="Minutos para pagar (reserva dos números)"><input type="number" min={5} max={120} value={f.reservation_minutes} onChange={e => set('reservation_minutes', Number(e.target.value))} style={inputStyle} /></F>
         <F label="Máximo de números por compra"><input type="number" min={1} max={1000} value={f.max_per_order} onChange={e => set('max_per_order', Number(e.target.value))} style={inputStyle} /></F>
       </div>
-      <ActionButton variant="vinho" onClick={async () => { await api('/admin/settings-payments', { method: 'PUT', body: f }); toast('success', 'Pagamentos salvos'); reload() }}><Save size={14} /> Salvar</ActionButton>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <ActionButton variant="vinho" onClick={async () => { await api('/admin/settings-payments', { method: 'PUT', body: f }); toast('success', 'Pagamentos salvos'); reload() }}><Save size={14} /> Salvar</ActionButton>
+        <ActionButton variant="ghost" onClick={async () => {
+          const r = await api('/admin/payments/test-connection', { body: {} })
+          toast('success', r.account ? 'Conexão com a SyncPay OK' : 'Modo simulado', r.account ? `Conta: ${r.account.name} (${r.account.status})` : r.message)
+        }}>Testar conexão com a SyncPay</ActionButton>
+      </div>
     </Card>
   )
 }

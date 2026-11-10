@@ -4,7 +4,7 @@ import { requirePerm, requireRole } from '../auth'
 import { getSetting, paymentsConfig, setSetting, allSettings } from '../settings'
 import { audit } from '../services'
 import { emit } from '../events'
-import { lookupNumbers, paymentStatus, reconcile, simulatePayment, startCheckout, validCPF } from '../payments'
+import { lookupNumbers, paymentStatus, pix, reconcile, simulatePayment, startCheckout, validCPF } from '../payments'
 import { listWithdrawals, payWithdrawal, refuseWithdrawal, requestWithdrawal, wallet } from '../withdrawals'
 
 const affiliateOf = (ctx: any) => {
@@ -77,6 +77,13 @@ export function checkoutRoutes(r: Router) {
     const p = get<any>('SELECT identifier FROM payments WHERE id = ?', Number(ctx.params.id))
     if (!p) fail(404, 'nao_encontrado', 'Pagamento não encontrado.')
     return (await reconcile(p.identifier)) || get<any>('SELECT * FROM payments WHERE id = ?', Number(ctx.params.id))
+  })
+  r.post('/api/admin/payments/test-connection', async ctx => {
+    requirePerm(ctx, 'configuracoes')
+    const c = pix()
+    if (!c.ping) return { ok: true, mode: c.mode, message: 'Modo simulado: nada a conferir na SyncPay.' }
+    try { const p = await c.ping(); return { ok: true, mode: c.mode, account: p } }
+    catch (e: any) { fail(502, 'syncpay_falhou', 'A SyncPay recusou: ' + String(e?.message || e).slice(0, 160)) }
   })
   r.put('/api/admin/settings-payments', async ctx => {
     const u = requirePerm(ctx, 'configuracoes')

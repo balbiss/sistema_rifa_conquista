@@ -12,6 +12,8 @@ export type PixClient = {
   createCharge(o: { amountCents: number; description: string; webhookUrl: string; client: { name: string; cpf: string; email: string; phone: string } }): Promise<{ identifier: string; pixCode: string }>
   check(identifier: string): Promise<{ status: string; amount: number } | null>
   simulatePay?(identifier: string, status?: string): boolean
+  /** Confere as credenciais sem gerar cobrança (perfil da conta na SyncPay). */
+  ping?(): Promise<{ name: string; status: string; email: string }>
 }
 
 const simulated = new Map<string, { status: string; amount: number }>()
@@ -62,15 +64,22 @@ export function createSyncPay(cfg: { mode: string; client_id?: string; client_se
     async createCharge({ amountCents, description, webhookUrl, client }) {
       const d: any = await call('/api/partner/v1/cash-in', 'POST', {
         amount: Number((amountCents / 100).toFixed(2)), description, webhook_url: webhookUrl,
-        client: { name: client.name, cpf: client.cpf, email: client.email, phone: client.phone },
+        // documentação SyncPay: o CPF vai no campo "document" (dígito verificador é validado)
+        client: { name: client.name, document: client.cpf, email: client.email, phone: client.phone },
       })
       if (!d?.identifier || !d?.pix_code) throw new Error('SyncPay não retornou o PIX.')
       return { identifier: String(d.identifier), pixCode: String(d.pix_code) }
     },
     async check(id) {
-      const d: any = await call(`/api/partner/v2/transactions/${encodeURIComponent(id)}`)
-      const t = d?.data?.transaction || (d?.data?.status ? d.data : null)
+      // v2 (usada no Horta vs Pragas) e, se não achar, a v1 documentada: /v1/transaction/{identifier}
+      let d: any = await call(`/api/partner/v2/transactions/${encodeURIComponent(id)}`).catch(() => null)
+      let t = d?.data?.transaction || (d?.data?.status ? d.data : null)
+      if (!t) { d = await call(`/api/partner/v1/transaction/${encodeURIComponent(id)}`); t = d?.data?.status ? d.data : null }
       return t ? { status: String(t.status), amount: Number(t.amount) } : null
+    },
+    async ping() {
+      const d: any = await call('/api/partner/v1/profile')
+      return { name: String(d?.data?.name || ''), status: String(d?.data?.status || ''), email: String(d?.data?.email || '') }
     },
   }
 }

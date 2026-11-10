@@ -112,7 +112,17 @@ export async function paymentStatus(id: number, key: string) {
 /** Confere com a SyncPay e, se pago com o valor certo, confirma a participação (uma única vez). */
 export async function reconcile(identifier: string) {
   const p = get<any>('SELECT * FROM payments WHERE identifier = ?', identifier)
-  if (!p || p.status === 'pago' || p.status === 'pago_tarde') return p
+  if (!p) return p
+  if (p.status === 'pago' || p.status === 'pago_tarde') {
+    // já pago: só vigia estorno/MED (contestação) para avisar o organizador
+    const t = await pix().check(identifier).catch(() => null)
+    if (t && ['refunded', 'med', 'failed'].includes(t.status) && p.provider_status !== t.status) {
+      run('UPDATE payments SET provider_status = ? WHERE id = ?', t.status, p.id)
+      audit(null, 'pagamento.' + t.status, 'payment', p.id, { amount_cents: p.amount_cents })
+      alertAdmins(t.status === 'med' ? 'PIX em MED (contestação)' : 'PIX estornado', `Compra #${p.id} (R$ ${(p.amount_cents / 100).toFixed(2)}) ficou "${t.status}" na SyncPay. Avalie cancelar a participação em Participantes.`)
+    }
+    return p
+  }
   let t: { status: string; amount: number } | null = null
   try { t = await pix().check(identifier) } finally { run("UPDATE payments SET last_check_at = datetime('now') WHERE id = ?", p.id) }
   if (!t) return p
